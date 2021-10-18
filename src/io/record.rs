@@ -1,5 +1,5 @@
 use std::io::Error;
-use super::{FastqRead, Reader, FastqRecord, reader::{Buf, BufGz}};
+use super::{FastqRead, Reader, FastqRecord, Buf, BufGz};
 
 
 pub struct Records <R>{
