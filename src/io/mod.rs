@@ -1,5 +1,7 @@
 mod fastq;
 mod record;
+mod reader;
 
-pub use fastq::{Reader, FastqRead};
-pub use record::{Records, FastqRecord};
+pub use reader::Reader;
+pub use fastq::{FastqRead, FastqRecord};
+pub use record::Records;

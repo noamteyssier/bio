@@ -1,47 +1,49 @@
-use std::io::{self, BufRead, Error};
-use std::io::BufReader;
-
-use super::FastqRecord;
+use std::io::Error;
 
 pub trait FastqRead {
     fn read(&mut self, record: &mut FastqRecord) -> Result<(), Error>;
 }
 
-pub struct Reader <B> {
-    reader: B,
-    line_buffer: String
+#[derive(Debug)]
+pub struct FastqRecord {
+    name: String,
+    seq: String,
+    qual: String
 }
-impl <R: io::Read> Reader <io::BufReader<R>> {
-    pub fn from_file(reader: R) -> Self {
+impl FastqRecord {
+    pub fn new() -> Self {
         Self {
-            reader: BufReader::new(reader),
-            line_buffer: String::new()
+            name: String::new(),
+            seq: String::new(),
+            qual: String::new()
         }
     }
-}
-impl<R: io::Read> FastqRead for Reader<io::BufReader<R>> {
-    fn read(&mut self, record: &mut FastqRecord) -> Result<(), Error> {
-        record.clear();
-        
-        for i in 0..4 {
-            self.line_buffer.clear();
-            if self.reader.read_line(&mut self.line_buffer)? > 0 {
-                match i {
-                    0 => {
-                        assert!(self.line_buffer.starts_with('@'));
-                        record.assign_name(self.line_buffer.trim_matches('@').trim_end());
-                    },
-                    1 => {
-                        record.assign_seq(self.line_buffer.trim_end());
-                    }
-                    3 => {
-                        record.assign_qual(self.line_buffer.trim_end());
-                    }
-                    _ => {}
-                }
-            }
-        }
-
-        Ok(())
+    pub fn assign_name(&mut self, name: &str) {
+        self.name = name.to_string();
+    }
+    pub fn assign_seq(&mut self, seq: &str) {
+        self.seq = seq.to_string();
+    }
+    pub fn assign_qual(&mut self, qual: &str) {
+        self.qual = qual.to_string();
+    }
+    pub fn name(&self) -> &str {
+        &self.name
+    }
+    pub fn seq(&self) -> &str {
+        &self.seq
+    }
+    pub fn qual(&self) -> &str {
+        &self.qual
+    }
+    pub fn clear(&mut self) {
+        self.name.clear();
+        self.seq.clear();
+        self.qual.clear();
+    }
+    pub fn is_empty(&self) -> bool {
+        self.name.is_empty() & 
+            self.seq.is_empty() &
+            self.qual.is_empty()
     }
 }
